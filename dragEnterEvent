@@ -1,0 +1,69 @@
+import sys
+
+from PyQt5.QtWidgets import QMainWindow, QFrame, \
+    QDesktopWidget, QApplication, QWidget, QGridLayout, \
+    QAction, QMessageBox
+
+from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal
+from PyQt5.QtGui import QPainter, QColor, QDropEvent, QIcon, QDragEnterEvent
+
+import myimage_rc
+
+
+class MainInterface(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self):
+        """
+        初始化界面-总
+        """
+        self.setMinimumSize(1.7 * 650, 650)
+        self.statusBar().hide()
+        self.setAcceptDrops(True)
+        self.setWindowTitle('拖拽txt')
+
+        self.__setTmenu()
+
+    def __setTmenu(self):
+        """
+        初始化菜单
+        """
+        self.__menubar = self.menuBar()
+        self.__setTmenuF()
+
+    def __setTmenuF(self):
+        icon_Open = QIcon(':/images/open')
+        action_Open = QAction(icon_Open, '&打开', self)
+        action_Open.setShortcut('Ctrl+f')
+        menu_F = self.__menubar.addMenu('文件(&F)')  # 添加到menu
+        menu_F.addAction(action_Open)
+        action_Open.triggered.connect(self.__on_action_Open)
+
+    def __on_action_Open(self):
+        # TODO(tzing): action open
+        QMessageBox.information(self, '标题', '消息对话框正文',
+                                QMessageBox.Yes | QMessageBox.No,
+                                QMessageBox.Yes)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        fileName = event.mimeData().text()
+        self.__on_action_Open()
+
+
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    MainWindow = MainInterface()
+    MainWindow.show()
+
+    sys.exit(app.exec())
